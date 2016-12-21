@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Xml.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Models;
@@ -36,8 +32,25 @@ namespace Izio.Umbraco.ContentUtilities
         /// <param name="configuration"></param>
         public void Deploy(XDocument configuration)
         {
+            //get all templates
+            var templates = configuration.Descendants("Template").Select(CreateTemplate);
 
-            
+            //save all templates
+            foreach (var template in templates)
+            {
+                _fileService.SaveTemplate(template);
+            }
+        }
+
+        public Template CreateTemplate(XElement templateConfiguration)
+        {
+            var template = new Template(templateConfiguration.Element("Name").Value, templateConfiguration.Element("Alias").Value)
+            {
+                Content = templateConfiguration.Element("Content").Value,
+                MasterTemplateAlias = templateConfiguration.Element("MaterTemplateAlias").Value
+            };
+
+            return template;
         }
     }
 }
