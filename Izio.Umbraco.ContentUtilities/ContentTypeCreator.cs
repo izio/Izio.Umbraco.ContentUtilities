@@ -18,6 +18,7 @@ namespace Izio.Umbraco.ContentUtilities
         private readonly IContentTypeService _contentTypeService;
         private readonly IFileService _fileService;
         private readonly IEnumerable<IDataTypeDefinition> _dataTypeDefinitions;
+        private readonly List<ContentType> _deployedContentTypes;
 
         /// <summary>
         /// 
@@ -27,6 +28,7 @@ namespace Izio.Umbraco.ContentUtilities
             _contentTypeService = ApplicationContext.Current.Services.ContentTypeService;
             _fileService = ApplicationContext.Current.Services.FileService;
             _dataTypeDefinitions = ApplicationContext.Current.Services.DataTypeService.GetAllDataTypeDefinitions();
+            _deployedContentTypes = new List<ContentType>();
         }
 
         /// <summary>
@@ -57,6 +59,8 @@ namespace Izio.Umbraco.ContentUtilities
                     var contentType = CreateContentType(contentTypeConfiguration);
 
                     _contentTypeService.Save(contentType);
+
+                    _deployedContentTypes.Add(contentType);
                 }
 
                 //update content types
@@ -70,6 +74,12 @@ namespace Izio.Umbraco.ContentUtilities
             catch (Exception ex)
             {
                 LogHelper.Error<ContentTypeCreator>("Failed to deply content types", ex);
+
+                //delete deployed content types
+                foreach (var contentType in _deployedContentTypes)
+                {
+                    _contentTypeService.Delete(contentType);
+                }
             }
         }
 
