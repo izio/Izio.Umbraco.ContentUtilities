@@ -6,6 +6,7 @@ using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
+using Umbraco.Core.Strings;
 
 namespace Izio.Umbraco.ContentUtilities
 {
@@ -45,40 +46,60 @@ namespace Izio.Umbraco.ContentUtilities
         /// <param name="configuration"></param>
         public void Deploy(XDocument configuration)
         {
-            var contentTypeConfigurations = configuration.Descendants("ContentType").Select(e => CreateContentType(e));
-
-            foreach (var contentType in contentTypeConfigurations)
+            try
             {
-                _contentTypeService.Save(contentType);
+                //get all content type configurations
+                var contentTypeConfigurations = configuration.Descendants("ContentType");
+
+                //create content types
+                foreach (var contentTypeConfiguration in contentTypeConfigurations)
+                {
+                    var contentType = CreateContentType(contentTypeConfiguration);
+
+                    _contentTypeService.Save(contentType);
+                }
+
+                //update content types
+                foreach (var contentTypeConfiguration in contentTypeConfigurations)
+                {
+                    var contentType = UpdateContentType(contentTypeConfiguration);
+
+                    _contentTypeService.Save(contentType);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error<ContentTypeCreator>("Failed to deply content types", ex);
             }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="e"></param>
+        /// <param name="contentTypeConfiguration"></param>
         /// <returns></returns>
-        private ContentType CreateContentType(XElement e)
+        private ContentType CreateContentType(XElement contentTypeConfiguration)
         {
             try
             {
                 //create content type
                 var contentType = new ContentType(-1)
                 {
-                    Name = e.Element("Name").Value,
-                    Alias = e.Element("Alias").Value,
-                    AllowedAsRoot = bool.Parse(e.Element("AllowedAsRoot").Value),
-                    AllowedTemplates = GetTemplates(e),
-                    Thumbnail = e.Element("Thumbnail").Value,
-                    Description = e.Element("Description").Value
+                    Name = contentTypeConfiguration.Element("Name").Value,
+                    Alias = contentTypeConfiguration.Element("Alias").Value,
+                    AllowedAsRoot = bool.Parse(contentTypeConfiguration.Element("AllowedAsRoot").Value),
+                    AllowedTemplates = GetTemplates(contentTypeConfiguration),
+                    Thumbnail = contentTypeConfiguration.Element("Thumbnail").Value,
+                    Description = contentTypeConfiguration.Element("Description").Value
                 };
 
                 //add properties
-                foreach (var property in e.Descendants("Property"))
+                foreach (var property in contentTypeConfiguration.Descendants("Property"))
                 {
                     //add property to content type
                     contentType.AddPropertyType(
-                        new PropertyType(_dataTypeDefinitions.FirstOrDefault(t => t.Name.ToLower() == property.Element("Type").Value))
+                        new PropertyType(
+                            _dataTypeDefinitions.FirstOrDefault(t => t.Name.ToLower() == property.Element("Type").Value))
                         {
                             Name = property.Element("Name").Value,
                             Alias = property.Element("Alias").Value,
@@ -87,12 +108,6 @@ namespace Izio.Umbraco.ContentUtilities
                         },
                         property.Element("Group").Value);
                 }
-
-                //set default template
-                contentType.SetDefaultTemplate(GetTemplate(e.Element("DefaultTemplate").Value));
-
-                //set allowed content types
-                contentType.AllowedContentTypes = GetContentTypes(e.Element("AllowedContentTypes").Value);
 
                 return contentType;
             }
@@ -107,15 +122,89 @@ namespace Izio.Umbraco.ContentUtilities
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="v"></param>
+        /// <param name="contentTypeConfiguration"></param>
         /// <returns></returns>
-        private IEnumerable<ContentTypeSort> GetContentTypes(string v)
+        private IContentType UpdateContentType(XElement contentTypeConfiguration)
         {
-            var aliases = v.Split(',');
+            try
+            {
+                // get content type
+                var contentType = _contentTypeService.GetContentType(contentTypeConfiguration.Element("Alias").Value.ToCleanString(CleanStringType.Alias | CleanStringType.UmbracoCase));
+
+                //set default template
+                contentType.SetDefaultTemplate(GetTemplate(contentTypeConfiguration.Element("DefaultTemplate").Value));
+
+                //set allowed content types
+                contentType.AllowedContentTypes = GetContentTypeSort(contentTypeConfiguration.Element("AllowedContentTypes").Value);
+
+                //set composition
+                contentType.ContentTypeComposition = GetContentTypes(contentTypeConfiguration.Element("ContentTypeComposition").Value);
+
+                return contentType;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error<ContentTypeCreator>("Failed to update content type", ex);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aliases"></param>
+        /// <returns></returns>
+        private IEnumerable<ContentType> GetContentTypes(string aliases)
+        {
+            var aliasesArray = aliases.Split(',');
+
+            return GetContentTypes(aliasesArray);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aliases"></param>
+        /// <returns></returns>
+        private IEnumerable<ContentType> GetContentTypes(IEnumerable<string> aliases)
+        {
+            var contentTypes = new List<ContentType>();
+
+            foreach (var alias in aliases)
+            {
+                var contentType = _contentTypeService.GetContentType(alias);
+
+                if (contentType != null)
+                {
+                    contentTypes.Add((ContentType)contentType);
+                }
+            }
+
+            return contentTypes;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aliases"></param>
+        /// <returns></returns>
+        private IEnumerable<ContentTypeSort> GetContentTypeSort(string aliases)
+        {
+            var aliasesArray = aliases.Split(',');
+
+            return GetContentTypeSort(aliasesArray);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aliases"></param>
+        /// <returns></returns>
+        private IEnumerable<ContentTypeSort> GetContentTypeSort(string[] aliases)
+        {
             var contentTypeSort = new List<ContentTypeSort>();
 
-
-            for (int i = 0; i < aliases.Length; i++)
+            for (var i = 0; i < aliases.Length; i++)
             {
                 var contentType = _contentTypeService.GetContentType(aliases[i]);
 
