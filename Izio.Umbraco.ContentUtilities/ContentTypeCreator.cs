@@ -90,43 +90,34 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private ContentType CreateContentType(XElement contentTypeConfiguration)
         {
-            try
+            //create content type
+            var contentType = new ContentType(-1)
             {
-                //create content type
-                var contentType = new ContentType(-1)
-                {
-                    Name = contentTypeConfiguration.Element("Name").Value,
-                    Alias = contentTypeConfiguration.Element("Alias").Value,
-                    AllowedAsRoot = bool.Parse(contentTypeConfiguration.Element("AllowedAsRoot").Value),
-                    AllowedTemplates = GetTemplates(contentTypeConfiguration),
-                    Thumbnail = contentTypeConfiguration.Element("Thumbnail").Value,
-                    Description = contentTypeConfiguration.Element("Description").Value
-                };
+                Name = contentTypeConfiguration.Element("Name").Value,
+                Alias = contentTypeConfiguration.Element("Alias").Value,
+                AllowedAsRoot = bool.Parse(contentTypeConfiguration.Element("AllowedAsRoot").Value),
+                AllowedTemplates = GetTemplates(contentTypeConfiguration),
+                Thumbnail = contentTypeConfiguration.Element("Thumbnail").Value,
+                Description = contentTypeConfiguration.Element("Description").Value
+            };
 
-                //add properties
-                foreach (var property in contentTypeConfiguration.Descendants("Property"))
-                {
-                    //add property to content type
-                    contentType.AddPropertyType(
-                        new PropertyType(
-                            _dataTypeDefinitions.FirstOrDefault(t => t.Name.ToLower() == property.Element("Type").Value))
-                        {
-                            Name = property.Element("Name").Value,
-                            Alias = property.Element("Alias").Value,
-                            Description = property.Element("Description").Value,
-                            Mandatory = bool.Parse(property.Element("Mandatory").Value)
-                        },
-                        property.Element("Group").Value);
-                }
-
-                return contentType;
-            }
-            catch (Exception ex)
+            //add properties
+            foreach (var property in contentTypeConfiguration.Descendants("Property"))
             {
-                LogHelper.Error<ContentTypeCreator>("Failed to create content type", ex);
+                //add property to content type
+                contentType.AddPropertyType(
+                    new PropertyType(
+                        _dataTypeDefinitions.FirstOrDefault(t => t.Name.ToLower() == property.Element("Type").Value))
+                    {
+                        Name = property.Element("Name").Value,
+                        Alias = property.Element("Alias").Value,
+                        Description = property.Element("Description").Value,
+                        Mandatory = bool.Parse(property.Element("Mandatory").Value)
+                    },
+                    property.Element("Group").Value);
             }
 
-            return null;
+            return contentType;
         }
 
         /// <summary>
@@ -136,27 +127,19 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private IContentType UpdateContentType(XElement contentTypeConfiguration)
         {
-            try
-            {
-                // get content type
-                var contentType = _contentTypeService.GetContentType(contentTypeConfiguration.Element("Alias").Value.ToCleanString(CleanStringType.Alias | CleanStringType.UmbracoCase));
+            // get content type
+            var contentType = _contentTypeService.GetContentType(contentTypeConfiguration.Element("Alias").Value.ToCleanString(CleanStringType.Alias | CleanStringType.UmbracoCase));
 
-                //set default template
-                contentType.SetDefaultTemplate(GetTemplate(contentTypeConfiguration.Element("DefaultTemplate").Value));
+            //set default template
+            contentType.SetDefaultTemplate(GetTemplate(contentTypeConfiguration.Element("DefaultTemplate").Value));
 
-                //set allowed content types
-                contentType.AllowedContentTypes = GetContentTypeSort(contentTypeConfiguration.Element("AllowedContentTypes").Value);
+            //set allowed content types
+            contentType.AllowedContentTypes = GetContentTypeSort(contentTypeConfiguration.Element("AllowedContentTypes").Value);
 
-                //set composition
-                contentType.ContentTypeComposition = GetContentTypes(contentTypeConfiguration.Element("ContentTypeComposition").Value);
+            //set composition
+            contentType.ContentTypeComposition = GetContentTypes(contentTypeConfiguration.Element("ContentTypeComposition").Value);
 
-                return contentType;
-            }
-            catch (Exception ex)
-            {
-                LogHelper.Error<ContentTypeCreator>("Failed to update content type", ex);
-            }
-            return null;
+            return contentType;
         }
 
         /// <summary>
@@ -234,7 +217,7 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private IEnumerable<ITemplate> GetTemplates(XElement e)
         {
-            return e.Descendants("Template").Select(t => GetTemplate(t.Value));
+            return e.Descendants("Template").Select(t => GetTemplate(t.Value.ToCleanString(CleanStringType.UnderscoreAlias)));
         }
 
         /// <summary>
