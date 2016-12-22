@@ -18,6 +18,7 @@ namespace Izio.Umbraco.ContentUtilities
         public TemplateCreator()
         {
             _fileService = ApplicationContext.Current.Services.FileService;
+            _deployedTemplates = new List<Template>();
         }
 
         /// <summary>
