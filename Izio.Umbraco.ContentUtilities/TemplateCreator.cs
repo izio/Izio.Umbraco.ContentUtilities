@@ -1,14 +1,19 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 using Umbraco.Core;
+using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
+using Umbraco.Core.Strings;
 
 namespace Izio.Umbraco.ContentUtilities
 {
     public class TemplateCreator
     {
         private readonly IFileService _fileService;
+        private readonly List<Template> _deployedTemplates;
 
         public TemplateCreator()
         {
@@ -32,13 +37,27 @@ namespace Izio.Umbraco.ContentUtilities
         /// <param name="configuration"></param>
         public void Deploy(XDocument configuration)
         {
-            //get all templates
-            var templates = configuration.Descendants("Template").Select(CreateTemplate);
-
-            //save all templates
-            foreach (var template in templates)
+            try
             {
-                _fileService.SaveTemplate(template);
+                //get all templates
+                var templates = configuration.Descendants("Template").Select(CreateTemplate);
+
+                //save all templates
+                foreach (var template in templates)
+                {
+                    _fileService.SaveTemplate(template);
+                    _deployedTemplates.Add(template);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogHelper.Error<TemplateCreator>("Failed to deply templates", ex);
+
+                //delete deployed templates
+                foreach (var template in _deployedTemplates)
+                {
+                    _fileService.DeleteTemplate(template.Alias.ToCleanString(CleanStringType.UnderscoreAlias));   
+                }
             }
         }
 
