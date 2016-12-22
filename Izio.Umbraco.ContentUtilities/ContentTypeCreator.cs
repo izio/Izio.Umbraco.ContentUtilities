@@ -227,7 +227,7 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private ITemplate GetTemplate(string alias)
         {
-            return _fileService.GetTemplate(alias);
+            return _fileService.GetTemplate(alias.ToCleanString(CleanStringType.UnderscoreAlias));
         }
     }
 }
