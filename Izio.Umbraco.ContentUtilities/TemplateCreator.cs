@@ -13,12 +13,12 @@ namespace Izio.Umbraco.ContentUtilities
     public class TemplateCreator
     {
         private readonly IFileService _fileService;
-        private readonly List<Template> _deployedTemplates;
+        private readonly List<ITemplate> _deployedTemplates;
 
         public TemplateCreator()
         {
             _fileService = ApplicationContext.Current.Services.FileService;
-            _deployedTemplates = new List<Template>();
+            _deployedTemplates = new List<ITemplate>();
         }
 
         /// <summary>
@@ -41,16 +41,26 @@ namespace Izio.Umbraco.ContentUtilities
             try
             {
                 //get all templates
-                var templates = configuration.Descendants("Template").Select(CreateTemplate);
+                var templateConfigurations = configuration.Descendants("Template");
 
-                //save all templates
-                foreach (var template in templates)
+                //create templates
+                foreach (var templateConfiguration in templateConfigurations)
                 {
-                    if (CheckTemplateExists(template.Alias) == false)
+                    var template = CreateTemplate(templateConfiguration);
+
+                    if (CheckTemplateExists(template.Alias))
                     {
                         _fileService.SaveTemplate(template);
                         _deployedTemplates.Add(template);
                     }
+                }
+
+                //update templates
+                foreach (var templateConfiguration in templateConfigurations)
+                {
+                    var template = UpdateTemplate(templateConfiguration);
+
+                    _fileService.SaveTemplate(template);
                 }
             }
             catch (Exception ex)
@@ -60,18 +70,30 @@ namespace Izio.Umbraco.ContentUtilities
                 //delete deployed templates
                 foreach (var template in _deployedTemplates)
                 {
-                    _fileService.DeleteTemplate(template.Alias.ToCleanString(CleanStringType.UnderscoreAlias));
+                    _fileService.DeleteTemplate(template.Alias);
                 }
             }
         }
 
-        private Template CreateTemplate(XElement templateConfiguration)
+        private ITemplate CreateTemplate(XElement templateConfiguration)
         {
             var template = new Template(templateConfiguration.Element("Name").Value, templateConfiguration.Element("Alias").Value)
             {
-                Content = templateConfiguration.Element("Content").Value,
-                MasterTemplateAlias = templateConfiguration.Element("MasterTemplateAlias").Value
+                Content = templateConfiguration.Element("Content").Value
             };
+
+            return template;
+        }
+
+        private ITemplate UpdateTemplate(XElement templateConfiguration)
+        {
+            var template = _fileService.GetTemplate(templateConfiguration.Element("Alias").Value.ToCleanString(CleanStringType.UnderscoreAlias));
+            var masterTemplate = _fileService.GetTemplate(templateConfiguration.Element("MasterTemplateAlias").Value.ToCleanString(CleanStringType.UnderscoreAlias));
+
+            if (masterTemplate != null)
+            {
+                template.SetMasterTemplate(masterTemplate);
+            }
 
             return template;
         }
@@ -80,7 +102,7 @@ namespace Izio.Umbraco.ContentUtilities
         {
             var template = _fileService.GetTemplate(alias);
 
-            return template != null;
+            return template == null;
         }
     }
 }
