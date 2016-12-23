@@ -46,8 +46,11 @@ namespace Izio.Umbraco.ContentUtilities
                 //save all templates
                 foreach (var template in templates)
                 {
-                    _fileService.SaveTemplate(template);
-                    _deployedTemplates.Add(template);
+                    if (CheckTemplateExists(template.Alias) == false)
+                    {
+                        _fileService.SaveTemplate(template);
+                        _deployedTemplates.Add(template);
+                    }
                 }
             }
             catch (Exception ex)
@@ -57,20 +60,27 @@ namespace Izio.Umbraco.ContentUtilities
                 //delete deployed templates
                 foreach (var template in _deployedTemplates)
                 {
-                    _fileService.DeleteTemplate(template.Alias.ToCleanString(CleanStringType.UnderscoreAlias));   
+                    _fileService.DeleteTemplate(template.Alias.ToCleanString(CleanStringType.UnderscoreAlias));
                 }
             }
         }
 
-        public Template CreateTemplate(XElement templateConfiguration)
+        private Template CreateTemplate(XElement templateConfiguration)
         {
             var template = new Template(templateConfiguration.Element("Name").Value, templateConfiguration.Element("Alias").Value)
             {
                 Content = templateConfiguration.Element("Content").Value,
-                MasterTemplateAlias = templateConfiguration.Element("MaterTemplateAlias").Value
+                MasterTemplateAlias = templateConfiguration.Element("MasterTemplateAlias").Value
             };
 
             return template;
+        }
+
+        private bool CheckTemplateExists(string alias)
+        {
+            var template = _fileService.GetTemplate(alias);
+
+            return template != null;
         }
     }
 }
