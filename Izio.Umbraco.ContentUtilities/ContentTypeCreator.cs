@@ -96,7 +96,7 @@ namespace Izio.Umbraco.ContentUtilities
                 Name = contentTypeConfiguration.Element("Name").Value,
                 Alias = contentTypeConfiguration.Element("Alias").Value,
                 AllowedAsRoot = bool.Parse(contentTypeConfiguration.Element("AllowedAsRoot").Value),
-                AllowedTemplates = GetTemplates(contentTypeConfiguration),
+                AllowedTemplates = GetTemplates(contentTypeConfiguration.Element("AllowedTemplates").Value),
                 Thumbnail = contentTypeConfiguration.Element("Thumbnail").Value,
                 Description = contentTypeConfiguration.Element("Description").Value
             };
@@ -106,8 +106,7 @@ namespace Izio.Umbraco.ContentUtilities
             {
                 //add property to content type
                 contentType.AddPropertyType(
-                    new PropertyType(
-                        _dataTypeDefinitions.FirstOrDefault(t => t.Name.ToLower() == property.Element("Type").Value))
+                    new PropertyType(_dataTypeDefinitions.FirstOrDefault(t => t.Name.ToLower() == property.Element("Type").Value))
                     {
                         Name = property.Element("Name").Value,
                         Alias = property.Element("Alias").Value,
@@ -213,11 +212,35 @@ namespace Izio.Umbraco.ContentUtilities
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="e"></param>
+        /// <param name="aliases"></param>
         /// <returns></returns>
-        private IEnumerable<ITemplate> GetTemplates(XElement e)
+        private IEnumerable<ITemplate> GetTemplates(string aliases)
         {
-            return e.Descendants("Template").Select(t => GetTemplate(t.Value.ToCleanString(CleanStringType.UnderscoreAlias)));
+            var templatesArray = aliases.Split(',');
+
+            return GetTemplates(templatesArray);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aliases"></param>
+        /// <returns></returns>
+        private IEnumerable<ITemplate> GetTemplates(string[] aliases)
+        {
+            var templates = new List<ITemplate>();
+
+            foreach (var alias in aliases)
+            {
+                var template = GetTemplate(alias.ToCleanString(CleanStringType.UnderscoreAlias));
+
+                if (template != null)
+                {
+                    templates.Add(template);
+                }
+            }
+
+            return templates;
         }
 
         /// <summary>
