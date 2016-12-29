@@ -48,6 +48,14 @@ namespace Izio.Umbraco.ContentUtilities
         /// <param name="configuration"></param>
         public void Deploy(XDocument configuration)
         {
+            //get all content type aliases
+            var aliases = configuration.Descendants("ContentType").Select(a => a.Element("Alias").Value);
+
+            if (CheckConflicts(aliases))
+            {
+                throw new ArgumentException("The specified configuration could not be deployed as it contains content types that already exist");
+            }
+
             try
             {
                 //get all content type configurations
@@ -81,6 +89,25 @@ namespace Izio.Umbraco.ContentUtilities
                     _contentTypeService.Delete(contentType);
                 }
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aliases"></param>
+        /// <returns></returns>
+        private bool CheckConflicts(IEnumerable<string> aliases)
+        {
+            //get existing aliases
+            var existingAliases = _contentTypeService.GetAllContentTypeAliases();
+
+            //check whether there are any clashes with existing content type aliases
+            if (aliases.Intersect(existingAliases).Any())
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
