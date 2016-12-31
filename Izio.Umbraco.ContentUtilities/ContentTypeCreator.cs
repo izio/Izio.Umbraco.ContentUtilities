@@ -48,16 +48,18 @@ namespace Izio.Umbraco.ContentUtilities
         /// <param name="configuration"></param>
         public void Deploy(XDocument configuration)
         {
-            //get all content type aliases
-            var aliases = configuration.Descendants("ContentType").Select(a => a.Element("Alias").Value);
-
-            if (CheckConflicts(aliases))
-            {
-                throw new ArgumentException("The specified configuration could not be deployed as it contains content types that already exist");
-            }
-
             try
             {
+                //get all content type aliases
+                var aliases = configuration.Descendants("ContentType").Select(a => a.Element("Alias").Value);
+
+                //check for conflicts
+                if (CheckConflicts(aliases))
+                {
+                    //throw exception
+                    throw new ArgumentException("The specified configuration could not be deployed as it contains content types that already exist");
+                }
+
                 //get all content type configurations
                 var contentTypeConfigurations = configuration.Descendants("ContentType");
 
@@ -66,21 +68,18 @@ namespace Izio.Umbraco.ContentUtilities
                 {
                     var contentType = CreateContentType(contentTypeConfiguration);
 
-                    _contentTypeService.Save(contentType);
-
                     _deployedContentTypes.Add(contentType);
                 }
 
                 //update content types
                 foreach (var contentTypeConfiguration in contentTypeConfigurations)
                 {
-                    var contentType = UpdateContentType(contentTypeConfiguration);
-
-                    _contentTypeService.Save(contentType);
+                    UpdateContentType(contentTypeConfiguration);
                 }
             }
             catch (Exception ex)
             {
+                //log exception
                 LogHelper.Error<ContentTypeCreator>("Failed to deply content types", ex);
 
                 //delete deployed content types
@@ -143,6 +142,8 @@ namespace Izio.Umbraco.ContentUtilities
                     property.Element("Group").Value);
             }
 
+            _contentTypeService.Save(contentType);
+
             return contentType;
         }
 
@@ -156,6 +157,16 @@ namespace Izio.Umbraco.ContentUtilities
             // get content type
             var contentType = _contentTypeService.GetContentType(contentTypeConfiguration.Element("Alias").Value.ToCleanString(CleanStringType.Alias | CleanStringType.UmbracoCase));
 
+            return UpdateContentType(contentType, contentTypeConfiguration);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="contentTypeConfiguration"></param>
+        /// <returns></returns>
+        private IContentType UpdateContentType(IContentType contentType, XElement contentTypeConfiguration)
+        {
             //set default template
             contentType.SetDefaultTemplate(GetTemplate(contentTypeConfiguration.Element("DefaultTemplate").Value));
 
@@ -164,6 +175,9 @@ namespace Izio.Umbraco.ContentUtilities
 
             //set composition
             contentType.ContentTypeComposition = GetContentTypes(contentTypeConfiguration.Element("ContentTypeComposition").Value);
+
+            //save the changes
+            _contentTypeService.Save(contentType);
 
             return contentType;
         }
