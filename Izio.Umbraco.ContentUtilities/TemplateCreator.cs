@@ -40,6 +40,16 @@ namespace Izio.Umbraco.ContentUtilities
         {
             try
             {
+                //get all content type aliases
+                var aliases = configuration.Descendants("ContentType").Select(a => a.Element("Alias").Value);
+
+                //check for conflicts
+                if (CheckConflicts(aliases))
+                {
+                    //throw exception
+                    throw new ArgumentException("The specified configuration could not be deployed as it contains content types that already exist");
+                }
+
                 //get all templates
                 var templateConfigurations = configuration.Descendants("Template");
 
@@ -75,6 +85,34 @@ namespace Izio.Umbraco.ContentUtilities
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aliases"></param>
+        /// <returns></returns>
+        private bool CheckConflicts(IEnumerable<string> aliases)
+        {
+            foreach (var alias in aliases)
+            {
+                //try and get template with the specified alias
+                var template = _fileService.GetTemplate(alias.ToCleanString(CleanStringType.UnderscoreAlias));
+
+                //return true if template exists
+                if (template != null)
+                {
+                    return true;
+                }
+            }
+
+            //no conflicts
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="templateConfiguration"></param>
+        /// <returns></returns>
         private ITemplate CreateTemplate(XElement templateConfiguration)
         {
             var template = new Template(templateConfiguration.Element("Name").Value, templateConfiguration.Element("Alias").Value)
@@ -85,6 +123,11 @@ namespace Izio.Umbraco.ContentUtilities
             return template;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="templateConfiguration"></param>
+        /// <returns></returns>
         private ITemplate UpdateTemplate(XElement templateConfiguration)
         {
             var template = _fileService.GetTemplate(templateConfiguration.Element("Alias").Value.ToCleanString(CleanStringType.UnderscoreAlias));
@@ -98,6 +141,11 @@ namespace Izio.Umbraco.ContentUtilities
             return template;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <returns></returns>
         private bool CheckTemplateExists(string alias)
         {
             var template = _fileService.GetTemplate(alias);
