@@ -58,19 +58,13 @@ namespace Izio.Umbraco.ContentUtilities
                 {
                     var template = CreateTemplate(templateConfiguration);
 
-                    if (CheckTemplateExists(template.Alias))
-                    {
-                        _fileService.SaveTemplate(template);
-                        _deployedTemplates.Add(template);
-                    }
+                    _deployedTemplates.Add(template);
                 }
 
                 //update templates
                 foreach (var templateConfiguration in templateConfigurations)
                 {
-                    var template = UpdateTemplate(templateConfiguration);
-
-                    _fileService.SaveTemplate(template);
+                    UpdateTemplate(templateConfiguration);
                 }
             }
             catch (Exception ex)
@@ -120,6 +114,8 @@ namespace Izio.Umbraco.ContentUtilities
                 Content = templateConfiguration.Element("Content").Value
             };
 
+            _fileService.SaveTemplate(template);
+
             return template;
         }
 
@@ -130,27 +126,37 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private ITemplate UpdateTemplate(XElement templateConfiguration)
         {
+            //get template
             var template = _fileService.GetTemplate(templateConfiguration.Element("Alias").Value.ToCleanString(CleanStringType.UnderscoreAlias));
-            var masterTemplate = _fileService.GetTemplate(templateConfiguration.Element("MasterTemplateAlias").Value.ToCleanString(CleanStringType.UnderscoreAlias));
 
-            if (masterTemplate != null)
-            {
-                template.SetMasterTemplate(masterTemplate);
-            }
-
-            return template;
+            return UpdateTemplate(template, templateConfiguration);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="alias"></param>
+        /// <param name="template"></param>
+        /// <param name="templateConfiguration"></param>
         /// <returns></returns>
-        private bool CheckTemplateExists(string alias)
+        private ITemplate UpdateTemplate(ITemplate template, XElement templateConfiguration)
         {
-            var template = _fileService.GetTemplate(alias);
+            //check if a master template has been specified
+            if (string.IsNullOrEmpty(templateConfiguration.Element("MasterTemplateAlias").Value) == false)
+            {
+                //get master template
+                var masterTemplate = _fileService.GetTemplate(templateConfiguration.Element("MasterTemplateAlias").Value.ToCleanString(CleanStringType.UnderscoreAlias));
 
-            return template == null;
+                //check template exists
+                if (masterTemplate != null)
+                {
+                    //set master template
+                    template.SetMasterTemplate(masterTemplate);
+                }
+
+                _fileService.SaveTemplate(template);
+            }
+
+            return template;
         }
     }
 }
