@@ -109,11 +109,13 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private ITemplate CreateTemplate(XElement templateConfiguration)
         {
+            //create template
             var template = new Template(templateConfiguration.Element("Name").Value, templateConfiguration.Element("Alias").Value)
             {
                 Content = templateConfiguration.Element("Content").Value
             };
 
+            //save template
             _fileService.SaveTemplate(template);
 
             return template;
