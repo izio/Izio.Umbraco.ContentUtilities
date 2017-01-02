@@ -40,14 +40,14 @@ namespace Izio.Umbraco.ContentUtilities
         {
             try
             {
-                //get all content type aliases
-                var aliases = configuration.Descendants("ContentType").Select(a => a.Element("Alias").Value);
+                //get all template aliases
+                var aliases = configuration.Descendants("Template").Select(a => a.Element("Alias").Value);
 
                 //check for conflicts
                 if (CheckConflicts(aliases))
                 {
                     //throw exception
-                    throw new ArgumentException("The specified configuration could not be deployed as it contains content types that already exist");
+                    throw new ArgumentException("The specified configuration could not be deployed as it contains templates that already exist");
                 }
 
                 //get all templates
