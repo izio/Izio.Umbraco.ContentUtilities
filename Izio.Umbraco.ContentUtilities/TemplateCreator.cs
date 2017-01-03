@@ -156,6 +156,7 @@ namespace Izio.Umbraco.ContentUtilities
                     template.SetMasterTemplate(masterTemplate);
                 }
 
+                //save the template
                 _fileService.SaveTemplate(template);
             }
 
