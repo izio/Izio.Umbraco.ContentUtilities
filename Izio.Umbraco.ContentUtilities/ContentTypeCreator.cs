@@ -142,6 +142,7 @@ namespace Izio.Umbraco.ContentUtilities
                     property.Element("Group").Value);
             }
 
+            //save content type
             _contentTypeService.Save(contentType);
 
             return contentType;
@@ -189,6 +190,7 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private IEnumerable<ContentType> GetContentTypes(string aliases)
         {
+            //split aliases in to an array
             var aliasesArray = aliases.Split(',');
 
             return GetContentTypes(aliasesArray);
@@ -201,12 +203,15 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private IEnumerable<ContentType> GetContentTypes(IEnumerable<string> aliases)
         {
+            //create content type list
             var contentTypes = new List<ContentType>();
 
             foreach (var alias in aliases)
             {
+                //get content type by alias
                 var contentType = _contentTypeService.GetContentType(alias);
 
+                //if content type exists add to list
                 if (contentType != null)
                 {
                     contentTypes.Add((ContentType)contentType);
@@ -223,6 +228,7 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private IEnumerable<ContentTypeSort> GetContentTypeSort(string aliases)
         {
+            //split aliases in to an array
             var aliasesArray = aliases.Split(',');
 
             return GetContentTypeSort(aliasesArray);
@@ -235,12 +241,15 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private IEnumerable<ContentTypeSort> GetContentTypeSort(string[] aliases)
         {
+            //create content type sort list
             var contentTypeSort = new List<ContentTypeSort>();
 
             for (var i = 0; i < aliases.Length; i++)
             {
+                //get content type
                 var contentType = _contentTypeService.GetContentType(aliases[i]);
 
+                //if content type exists add to list in current order
                 if (contentType != null)
                 {
                     contentTypeSort.Add(new ContentTypeSort(contentType.Id, i));
@@ -257,6 +266,7 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private IEnumerable<ITemplate> GetTemplates(string aliases)
         {
+            //split aliases in to an array
             var templatesArray = aliases.Split(',');
 
             return GetTemplates(templatesArray);
@@ -269,12 +279,15 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private IEnumerable<ITemplate> GetTemplates(string[] aliases)
         {
+            //create ITemplate list
             var templates = new List<ITemplate>();
 
             foreach (var alias in aliases)
             {
+                //get template
                 var template = GetTemplate(alias.ToCleanString(CleanStringType.UnderscoreAlias));
 
+                //if template exists add to list
                 if (template != null)
                 {
                     templates.Add(template);
@@ -291,6 +304,7 @@ namespace Izio.Umbraco.ContentUtilities
         /// <returns></returns>
         private ITemplate GetTemplate(string alias)
         {
+            //get specified template by alias
             return _fileService.GetTemplate(alias.ToCleanString(CleanStringType.UnderscoreAlias));
         }
     }

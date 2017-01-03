@@ -69,6 +69,7 @@ namespace Izio.Umbraco.ContentUtilities
             }
             catch (Exception ex)
             {
+                //log exception
                 LogHelper.Error<TemplateCreator>("Failed to deply templates", ex);
 
                 //delete deployed templates
