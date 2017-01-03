@@ -254,6 +254,7 @@
   <ItemGroup>
     <Compile Include="ContentTypeCreator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StylesheetCreator.cs" />
     <Compile Include="TemplateCreator.cs" />
   </ItemGroup>
   <ItemGroup>
