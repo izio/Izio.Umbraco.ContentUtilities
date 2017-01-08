@@ -6,7 +6,6 @@ using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
-using Umbraco.Core.Strings;
 
 namespace Izio.Umbraco.ContentUtilities
 {
@@ -107,7 +106,7 @@ namespace Izio.Umbraco.ContentUtilities
             //create partial view
             var partialView = new PartialView(partialViewConfiguration.Element("Path").Value)
             {
-                Content = partialViewConfiguration.Element("Content").Value,
+                Content = partialViewConfiguration.Element("Content").Value
             };
 
             //save partial view
