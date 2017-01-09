@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Izio.Umbraco.ContentUtilities.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -13,7 +14,7 @@ namespace Izio.Umbraco.ContentUtilities
     /// <summary>
     /// 
     /// </summary>
-    public class ContentTypeCreator
+    public class ContentTypeCreator : ICreator
     {
         private readonly IContentTypeService _contentTypeService;
         private readonly IFileService _fileService;
@@ -87,6 +88,58 @@ namespace Izio.Umbraco.ContentUtilities
                 {
                     _contentTypeService.Delete(contentType);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        public void Retract(string path)
+        {
+            var document = XDocument.Load(path);
+
+            Retract(document);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
+        public void Retract(XDocument configuration)
+        {
+            try
+            {
+                //get all content type aliases
+                var aliases = configuration.Descendants("ContentType").Select(a => a.Element("Alias").Value);
+
+                //delete content types
+                foreach (var alias in aliases)
+                {
+                    DeleteContentType(alias);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                LogHelper.Error<ContentTypeCreator>("Failed to retract content types", ex);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="alias"></param>
+        private void DeleteContentType(string alias)
+        {
+            //get content type
+            var contentType = _contentTypeService.GetContentType(alias);
+
+            //delete content type if it exists
+            if (contentType != null)
+            {
+                _contentTypeService.Delete(contentType);   
             }
         }
 
