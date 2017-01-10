@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Izio.Umbraco.ContentUtilities.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -9,7 +10,7 @@ using Umbraco.Core.Services;
 
 namespace Izio.Umbraco.ContentUtilities
 {
-    public class StylesheetCreator
+    public class StylesheetCreator : ICreator
     {
         private readonly IFileService _fileService;
         private readonly List<Stylesheet> _deployedStylesheets;
@@ -39,7 +40,7 @@ namespace Izio.Umbraco.ContentUtilities
         {
             try
             {
-                //get all stylehseet names
+                //get all stylesheet names
                 var names = configuration.Descendants("Stylesheet").Select(a => a.Element("Name").Value);
 
                 //check for conflicts
@@ -63,13 +64,48 @@ namespace Izio.Umbraco.ContentUtilities
             catch (Exception ex)
             {
                 //log exception
-                LogHelper.Error<TemplateCreator>("Failed to deply stylesheets", ex);
+                LogHelper.Error<TemplateCreator>("Failed to deploy stylesheets", ex);
 
                 //delete deployed stylesheets
                 foreach (var stylesheet in _deployedStylesheets)
                 {
                     _fileService.DeleteStylesheet(stylesheet.Path);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        public void Retract(string path)
+        {
+            var document = XDocument.Load(path);
+
+            Retract(document);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
+        public void Retract(XDocument configuration)
+        {
+            try
+            {
+                //get all stylesheet names
+                var aliases = configuration.Descendants("Stylesheet").Select(a => a.Element("Name").Value);
+
+                //delete all stylesheets
+                foreach (var alias in aliases)
+                {
+                    _fileService.DeleteStylesheet(alias);
+                }
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                LogHelper.Error<TemplateCreator>("Failed to retract stylesheets", ex);
             }
         }
 
