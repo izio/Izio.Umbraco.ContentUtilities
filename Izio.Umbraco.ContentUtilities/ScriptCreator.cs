@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Izio.Umbraco.ContentUtilities.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -9,7 +10,7 @@ using Umbraco.Core.Services;
 
 namespace Izio.Umbraco.ContentUtilities
 {
-    public class ScriptCreator
+    public class ScriptCreator : ICreator
     {
         private readonly IFileService _fileService;
         private readonly List<Script> _deployedScripts;
@@ -70,6 +71,41 @@ namespace Izio.Umbraco.ContentUtilities
                 {
                     _fileService.DeleteScript(script.Path);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        public void Retract(string path)
+        {
+            var document = XDocument.Load(path);
+
+            Retract(document);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
+        public void Retract(XDocument configuration)
+        {
+            try
+            {
+                //get all script names
+                var aliases = configuration.Descendants("Script").Select(a => a.Element("Name").Value);
+
+                //delete all scripts
+                foreach (var alias in aliases)
+                {
+                    _fileService.DeleteStylesheet(alias);
+                }
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                LogHelper.Error<TemplateCreator>("Failed to retract scripts", ex);
             }
         }
 
