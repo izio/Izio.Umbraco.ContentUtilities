@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Izio.Umbraco.ContentUtilities.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -10,7 +11,7 @@ using Umbraco.Core.Strings;
 
 namespace Izio.Umbraco.ContentUtilities
 {
-    public class TemplateCreator
+    public class TemplateCreator : ICreator
     {
         private readonly IFileService _fileService;
         private readonly List<ITemplate> _deployedTemplates;
@@ -77,6 +78,41 @@ namespace Izio.Umbraco.ContentUtilities
                 {
                     _fileService.DeleteTemplate(template.Alias);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        public void Retract(string path)
+        {
+            var document = XDocument.Load(path);
+
+            Retract(document);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
+        public void Retract(XDocument configuration)
+        {
+            try
+            {
+                //get all template aliases
+                var aliases = configuration.Descendants("Template").Select(a => a.Element("Alias").Value);
+
+                //delete all templates
+                foreach (var alias in aliases)
+                {
+                    _fileService.DeleteTemplate(alias);
+                }
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                LogHelper.Error<TemplateCreator>("Failed to retract templates", ex);
             }
         }
 
