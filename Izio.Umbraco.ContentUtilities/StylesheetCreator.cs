@@ -94,18 +94,18 @@ namespace Izio.Umbraco.ContentUtilities
             try
             {
                 //get all stylesheet names
-                var aliases = configuration.Descendants("Stylesheet").Select(a => a.Element("Name").Value);
+                var names = configuration.Descendants("Stylesheet").Select(a => a.Element("Name").Value);
 
                 //delete all stylesheets
-                foreach (var alias in aliases)
+                foreach (var name in names)
                 {
-                    _fileService.DeleteStylesheet(alias);
+                    _fileService.DeleteStylesheet(name);
                 }
             }
             catch (Exception ex)
             {
                 //log exception
-                LogHelper.Error<TemplateCreator>("Failed to retract stylesheets", ex);
+                LogHelper.Error<StylesheetCreator>("Failed to retract stylesheets", ex);
             }
         }
 

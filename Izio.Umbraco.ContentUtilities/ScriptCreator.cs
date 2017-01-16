@@ -94,18 +94,18 @@ namespace Izio.Umbraco.ContentUtilities
             try
             {
                 //get all script names
-                var aliases = configuration.Descendants("Script").Select(a => a.Element("Name").Value);
+                var names = configuration.Descendants("Script").Select(a => a.Element("Name").Value);
 
                 //delete all scripts
-                foreach (var alias in aliases)
+                foreach (var name in names)
                 {
-                    _fileService.DeleteStylesheet(alias);
+                    _fileService.DeleteStylesheet(name);
                 }
             }
             catch (Exception ex)
             {
                 //log exception
-                LogHelper.Error<TemplateCreator>("Failed to retract scripts", ex);
+                LogHelper.Error<ScriptCreator>("Failed to retract scripts", ex);
             }
         }
 
