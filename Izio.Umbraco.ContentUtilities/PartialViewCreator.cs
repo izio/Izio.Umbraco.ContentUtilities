@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using Izio.Umbraco.ContentUtilities.Interfaces;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
@@ -9,7 +10,7 @@ using Umbraco.Core.Services;
 
 namespace Izio.Umbraco.ContentUtilities
 {
-    public class PartialViewCreator
+    public class PartialViewCreator : ICreator
     {
         private readonly IFileService _fileService;
         private readonly List<IPartialView> _deployedPartialViews;
@@ -70,6 +71,41 @@ namespace Izio.Umbraco.ContentUtilities
                 {
                     _fileService.DeletePartialView(partialView.Alias);
                 }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        public void Retract(string path)
+        {
+            var document = XDocument.Load(path);
+
+            Retract(document);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
+        public void Retract(XDocument configuration)
+        {
+            try
+            {
+                //get all partial view paths
+                var paths = configuration.Descendants("PartialView").Select(a => a.Element("Path").Value);
+
+                //delete all partial views
+                foreach (var path in paths)
+                {
+                    _fileService.DeletePartialView(path);
+                }
+            }
+            catch (Exception ex)
+            {
+                //log exception
+                LogHelper.Error<TemplateCreator>("Failed to retract partial views", ex);
             }
         }
 
