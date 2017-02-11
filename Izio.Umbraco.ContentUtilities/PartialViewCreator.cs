@@ -145,8 +145,16 @@ namespace Izio.Umbraco.ContentUtilities
                 Content = partialViewConfiguration.Element("Content").Value
             };
 
-            //save partial view
-            _fileService.SavePartialView(partialView);
+            if (Convert.ToBoolean(partialViewConfiguration.Element("IsMacroPartial").Value))
+            {
+                //save macro partial view
+                _fileService.SavePartialViewMacro(partialView);
+            }
+            else
+            {
+                //save partial view
+                _fileService.SavePartialView(partialView);
+            }
 
             return partialView;
         }
