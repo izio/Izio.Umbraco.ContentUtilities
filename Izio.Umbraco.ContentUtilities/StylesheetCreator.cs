@@ -10,11 +10,17 @@ using Umbraco.Core.Services;
 
 namespace Izio.Umbraco.ContentUtilities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class StylesheetCreator : ICreator
     {
         private readonly IFileService _fileService;
         private readonly List<Stylesheet> _deployedStylesheets;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public StylesheetCreator()
         {
             _fileService = ApplicationContext.Current.Services.FileService;
@@ -99,7 +105,7 @@ namespace Izio.Umbraco.ContentUtilities
                 //delete all stylesheets
                 foreach (var name in names)
                 {
-                    _fileService.DeleteStylesheet(name);
+                    _fileService.DeleteStylesheet(name.ToSafeFileName());
                 }
             }
             catch (Exception ex)
@@ -119,7 +125,7 @@ namespace Izio.Umbraco.ContentUtilities
             foreach (var name in names)
             {
                 //try and get stylesheet with the specified name
-                var stylesheet = _fileService.GetStylesheetByName(name);
+                var stylesheet = _fileService.GetStylesheetByName(name.ToSafeFileName());
 
                 //return true if stylesheet exists
                 if (stylesheet != null)
@@ -140,7 +146,7 @@ namespace Izio.Umbraco.ContentUtilities
         private Stylesheet CreateStylesheet(XElement stylesheetConfiguration)
         {
             //create stylesheet
-            var stylesheet = new Stylesheet(stylesheetConfiguration.Element("Name").Value)
+            var stylesheet = new Stylesheet(stylesheetConfiguration.Element("Name").Value.ToSafeFileName())
             {
                 Content = stylesheetConfiguration.Element("Content").Value
             };
