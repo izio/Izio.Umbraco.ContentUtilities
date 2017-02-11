@@ -10,11 +10,17 @@ using Umbraco.Core.Services;
 
 namespace Izio.Umbraco.ContentUtilities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class ScriptCreator : ICreator
     {
         private readonly IFileService _fileService;
         private readonly List<Script> _deployedScripts;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public ScriptCreator()
         {
             _fileService = ApplicationContext.Current.Services.FileService;
@@ -99,7 +105,7 @@ namespace Izio.Umbraco.ContentUtilities
                 //delete all scripts
                 foreach (var name in names)
                 {
-                    _fileService.DeleteStylesheet(name);
+                    _fileService.DeleteStylesheet(name.ToSafeFileName());
                 }
             }
             catch (Exception ex)
@@ -119,7 +125,7 @@ namespace Izio.Umbraco.ContentUtilities
             foreach (var name in names)
             {
                 //try and get script with the specified name
-                var script = _fileService.GetScriptByName(name);
+                var script = _fileService.GetScriptByName(name.ToSafeFileName());
 
                 //return true if script exists
                 if (script != null)
@@ -140,7 +146,7 @@ namespace Izio.Umbraco.ContentUtilities
         private Script CreateScript(XElement scriptConfiguration)
         {
             //create script
-            var script = new Script(scriptConfiguration.Element("Name").Value)
+            var script = new Script(scriptConfiguration.Element("Name").Value.ToSafeFileName())
             {
                 Content = scriptConfiguration.Element("Content").Value
             };
