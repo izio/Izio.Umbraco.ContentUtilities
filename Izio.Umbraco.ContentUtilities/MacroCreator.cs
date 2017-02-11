@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using Izio.Umbraco.ContentUtilities.Interfaces;
-using umbraco.cms.businesslogic.macro;
 using Umbraco.Core;
 using Umbraco.Core.Logging;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
-using Macro = Umbraco.Core.Models.Macro;
-using MacroProperty = Umbraco.Core.Models.MacroProperty;
 
 namespace Izio.Umbraco.ContentUtilities
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class MacroCreator : ICreator
     {
         private readonly IMacroService _macroService;
@@ -111,7 +109,7 @@ namespace Izio.Umbraco.ContentUtilities
                 //delete all macros
                 foreach (var alias in aliases)
                 {
-                    var macro = _macroService.GetByAlias(alias);
+                    var macro = _macroService.GetByAlias(alias.ToSafeAlias());
 
                     _macroService.Delete(macro);
                 }
@@ -135,7 +133,7 @@ namespace Izio.Umbraco.ContentUtilities
             foreach (var alias in aliases)
             {
                 //try and get macro with the specified alias
-                var macro = _macroService.GetByAlias(alias);
+                var macro = _macroService.GetByAlias(alias.ToSafeAlias());
 
                 //return true if macro exists
                 if (macro != null)
@@ -159,7 +157,7 @@ namespace Izio.Umbraco.ContentUtilities
             var macro = new Macro
             {
                 Name = macroConfiguration.Element("Name").Value,
-                Alias = macroConfiguration.Element("Alias").Value,
+                Alias = macroConfiguration.Element("Alias").Value.ToSafeAlias(),
                 ScriptPath = macroConfiguration.Element("ScriptPath") == null ? "" : macroConfiguration.Element("ScriptPath").Value,
                 XsltPath = macroConfiguration.Element("XsltPath") == null ? "" : macroConfiguration.Element("XsltPath").Value,
                 ControlType = macroConfiguration.Element("ControlType") == null ? "" : macroConfiguration.Element("ControlType").Value,
@@ -201,7 +199,7 @@ namespace Izio.Umbraco.ContentUtilities
                 var macroProperty = new MacroProperty()
                 {
                     Name = property.Element("Name").Value,
-                    Alias = property.Element("Alias").Value.ToSafeAlias(true),
+                    Alias = property.Element("Alias").Value.ToSafeAlias(),
                     EditorAlias = _dataTypeDefinitions.FirstOrDefault(t => t.Name.ToLower() == property.Element("Type").Value).PropertyEditorAlias,
                     SortOrder = macroProperties.Count
                 };
