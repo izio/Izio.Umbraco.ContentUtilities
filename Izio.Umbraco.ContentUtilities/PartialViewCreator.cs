@@ -99,13 +99,20 @@ namespace Izio.Umbraco.ContentUtilities
         {
             try
             {
-                //get all partial view paths
-                var paths = configuration.Descendants("PartialView").Select(a => a.Element("Path").Value);
+                //get all partial views
+                var partialViews = configuration.Descendants("PartialView").Select(a => new { Path = a.Element("Path").Value, IsMacroPartial = Convert.ToBoolean(a.Element("IsMacroPartial").Value)});
 
                 //delete all partial views
-                foreach (var path in paths)
+                foreach (var partialView in partialViews)
                 {
-                    _fileService.DeletePartialView(path);
+                    if (partialView.IsMacroPartial)
+                    {
+                        _fileService.DeletePartialViewMacro(partialView.Path);
+                    }
+                    else
+                    {
+                        _fileService.DeletePartialView(partialView.Path);
+                    }
                 }
             }
             catch (Exception ex)
