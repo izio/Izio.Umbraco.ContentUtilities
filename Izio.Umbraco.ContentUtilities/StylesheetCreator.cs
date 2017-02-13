@@ -70,7 +70,7 @@ namespace Izio.Umbraco.ContentUtilities
             catch (Exception ex)
             {
                 //log exception
-                LogHelper.Error<TemplateCreator>("Failed to deploy stylesheets", ex);
+                LogHelper.Error<StylesheetCreator>("Failed to deploy stylesheets", ex);
 
                 //delete deployed stylesheets
                 foreach (var stylesheet in _deployedStylesheets)
