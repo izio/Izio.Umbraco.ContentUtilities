@@ -105,7 +105,7 @@ namespace Izio.Umbraco.ContentUtilities
                 //delete all stylesheets
                 foreach (var name in names)
                 {
-                    _fileService.DeleteStylesheet(name.ToSafeFileName());
+                    _fileService.DeleteStylesheet(name);
                 }
             }
             catch (Exception ex)
@@ -125,7 +125,7 @@ namespace Izio.Umbraco.ContentUtilities
             foreach (var name in names)
             {
                 //try and get stylesheet with the specified name
-                var stylesheet = _fileService.GetStylesheetByName(name.ToSafeFileName());
+                var stylesheet = _fileService.GetStylesheetByName(name);
 
                 //return true if stylesheet exists
                 if (stylesheet != null)
@@ -146,7 +146,7 @@ namespace Izio.Umbraco.ContentUtilities
         private Stylesheet CreateStylesheet(XElement stylesheetConfiguration)
         {
             //create stylesheet
-            var stylesheet = new Stylesheet(stylesheetConfiguration.Element("Name").Value.ToSafeFileName())
+            var stylesheet = new Stylesheet(stylesheetConfiguration.Element("Name").Value)
             {
                 Content = stylesheetConfiguration.Element("Content").Value
             };

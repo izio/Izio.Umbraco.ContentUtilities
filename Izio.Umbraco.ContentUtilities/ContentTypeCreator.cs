@@ -52,7 +52,7 @@ namespace Izio.Umbraco.ContentUtilities
             try
             {
                 //get all content type aliases
-                var aliases = configuration.Descendants("ContentType").Select(a => a.Element("Alias").Value);
+                var aliases = configuration.Descendants("ContentType").Select(a => a.Element("Alias").Value.ToSafeAlias());
 
                 //check for conflicts
                 if (CheckConflicts(aliases))
@@ -134,7 +134,7 @@ namespace Izio.Umbraco.ContentUtilities
         private void DeleteContentType(string alias)
         {
             //get content type
-            var contentType = _contentTypeService.GetContentType(alias);
+            var contentType = _contentTypeService.GetContentType(alias.ToSafeAlias());
 
             //delete content type if it exists
             if (contentType != null)
@@ -173,7 +173,7 @@ namespace Izio.Umbraco.ContentUtilities
             var contentType = new ContentType(-1)
             {
                 Name = contentTypeConfiguration.Element("Name").Value,
-                Alias = contentTypeConfiguration.Element("Alias").Value,
+                Alias = contentTypeConfiguration.Element("Alias").Value.ToSafeAlias(),
                 AllowedAsRoot = bool.Parse(contentTypeConfiguration.Element("AllowedAsRoot").Value),
                 AllowedTemplates = GetTemplates(contentTypeConfiguration.Element("AllowedTemplates").Value),
                 Thumbnail = contentTypeConfiguration.Element("Thumbnail").Value,
@@ -188,7 +188,7 @@ namespace Izio.Umbraco.ContentUtilities
                     new PropertyType(_dataTypeDefinitions.FirstOrDefault(t => t.Name.ToLower() == property.Element("Type").Value))
                     {
                         Name = property.Element("Name").Value,
-                        Alias = property.Element("Alias").Value,
+                        Alias = property.Element("Alias").Value.ToSafeAlias(),
                         Description = property.Element("Description").Value,
                         Mandatory = bool.Parse(property.Element("Mandatory").Value)
                     },
@@ -209,7 +209,7 @@ namespace Izio.Umbraco.ContentUtilities
         private IContentType UpdateContentType(XElement contentTypeConfiguration)
         {
             // get content type
-            var contentType = _contentTypeService.GetContentType(contentTypeConfiguration.Element("Alias").Value.ToCleanString(CleanStringType.Alias | CleanStringType.UmbracoCase));
+            var contentType = _contentTypeService.GetContentType(contentTypeConfiguration.Element("Alias").Value.ToSafeAlias());
 
             return UpdateContentType(contentType, contentTypeConfiguration);
         }

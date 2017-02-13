@@ -105,7 +105,7 @@ namespace Izio.Umbraco.ContentUtilities
                 //delete all partial views
                 foreach (var path in paths)
                 {
-                    _fileService.DeletePartialView(path.ToSafeFileName());
+                    _fileService.DeletePartialView(path);
                 }
             }
             catch (Exception ex)
@@ -125,7 +125,7 @@ namespace Izio.Umbraco.ContentUtilities
             foreach (var path in paths)
             {
                 //try and get partial view with the specified path
-                var partialView = _fileService.GetPartialView(path.ToSafeFileName());
+                var partialView = _fileService.GetPartialView(path);
 
                 //return true if partial view exists
                 if (partialView != null)
@@ -146,7 +146,7 @@ namespace Izio.Umbraco.ContentUtilities
         private IPartialView CreatePartialView(XElement partialViewConfiguration)
         {
             //create partial view
-            var partialView = new PartialView(partialViewConfiguration.Element("Path").Value.ToSafeFileName())
+            var partialView = new PartialView(partialViewConfiguration.Element("Path").Value)
             {
                 Content = partialViewConfiguration.Element("Content").Value
             };

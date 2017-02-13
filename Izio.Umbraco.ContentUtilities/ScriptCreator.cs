@@ -105,7 +105,7 @@ namespace Izio.Umbraco.ContentUtilities
                 //delete all scripts
                 foreach (var name in names)
                 {
-                    _fileService.DeleteStylesheet(name.ToSafeFileName());
+                    _fileService.DeleteStylesheet(name);
                 }
             }
             catch (Exception ex)
@@ -125,7 +125,7 @@ namespace Izio.Umbraco.ContentUtilities
             foreach (var name in names)
             {
                 //try and get script with the specified name
-                var script = _fileService.GetScriptByName(name.ToSafeFileName());
+                var script = _fileService.GetScriptByName(name);
 
                 //return true if script exists
                 if (script != null)
@@ -146,7 +146,7 @@ namespace Izio.Umbraco.ContentUtilities
         private Script CreateScript(XElement scriptConfiguration)
         {
             //create script
-            var script = new Script(scriptConfiguration.Element("Name").Value.ToSafeFileName())
+            var script = new Script(scriptConfiguration.Element("Name").Value)
             {
                 Content = scriptConfiguration.Element("Content").Value
             };
