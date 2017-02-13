@@ -70,7 +70,7 @@ namespace Izio.Umbraco.ContentUtilities
             catch (Exception ex)
             {
                 //log exception
-                LogHelper.Error<TemplateCreator>("Failed to deply scripts", ex);
+                LogHelper.Error<ScriptCreator>("Failed to deploy scripts", ex);
 
                 //delete deployed scripts
                 foreach (var script in _deployedScripts)
@@ -105,7 +105,7 @@ namespace Izio.Umbraco.ContentUtilities
                 //delete all scripts
                 foreach (var name in names)
                 {
-                    _fileService.DeleteStylesheet(name);
+                    _fileService.DeleteScript(name);
                 }
             }
             catch (Exception ex)
