@@ -185,7 +185,7 @@ namespace Izio.Umbraco.ContentUtilities
             {
                 //add property to content type
                 contentType.AddPropertyType(
-                    new PropertyType(_dataTypeDefinitions.FirstOrDefault(t => t.Name.ToLower() == property.Element("Type").Value))
+                    new PropertyType(_dataTypeDefinitions.FirstOrDefault(t => property.Element("Type") != null && (t.Name.ToLower() == property.Element("Type").Value.ToLower() || t.PropertyEditorAlias.ToLower() == property.Element("Type").Value.ToLower())))
                     {
                         Name = property.Element("Name").Value,
                         Alias = property.Element("Alias").Value.ToSafeAlias(),
