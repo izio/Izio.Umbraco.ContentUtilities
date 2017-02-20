@@ -200,7 +200,7 @@ namespace Izio.Umbraco.ContentUtilities
                 {
                     Name = property.Element("Name").Value,
                     Alias = property.Element("Alias").Value.ToSafeAlias(),
-                    EditorAlias = _dataTypeDefinitions.FirstOrDefault(t => t.Name.ToLower() == property.Element("Type").Value).PropertyEditorAlias,
+                    EditorAlias = _dataTypeDefinitions.FirstOrDefault(t => property.Element("Type") != null && (t.Name.ToLower() == property.Element("Type").Value.ToLower() || t.PropertyEditorAlias.ToLower() == property.Element("Type").Value.ToLower())).PropertyEditorAlias,
                     SortOrder = macroProperties.Count
                 };
 

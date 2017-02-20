@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+  <Templates>
+    <Template>
+      <Name>The name of the template</Name>
+      <Alias>The alias of the template</Alias>
+      <Content>
+        <![CDATA[Your template content]]>
+      </Content>
+      <MasterTemplateAlias>The alias of the templates master template</MasterTemplateAlias>
+    </Template>
+  </Templates>
+  <ContentTypes>
+    <ContentType>
+      <Name>The name of the content type</Name>
+      <Alias>The alias of the content type</Alias>
+      <Description>A full description of the content type</Description>
+      <AllowedAsRoot>True/False</AllowedAsRoot>
+      <Thumbnail></Thumbnail>
+      <DefaultTemplate></DefaultTemplate>
+      <AllowedContentTypes>A comma separated list of allowable child content type</AllowedContentTypes>
+      <AllowedTemplates>A comma separated list of allowable templates</AllowedTemplates>
+      <ContentTypeComposition>A comma separated list of the ContentType aliases that compose the content type</ContentTypeComposition>
+      <Properties>
+        <Property>
+          <Name>The property name</Name>
+          <Alias>The property alias</Alias>
+          <Description>A full description of the property</Description>
+          <Mandatory>True/False</Mandatory>
+          <Type>The type name or alias</Type>
+          <Group>The name of the group the property belongs to</Group>
+        </Property>
+      </Properties>
+    </ContentType>
+  </ContentTypes>
+  <Stylesheets>
+    <Stylesheet>
+      <Name>The stylesheet name</Name>
+      <Content>
+        <![CDATA[The stylesheet content]]>
+      </Content>
+    </Stylesheet>
+  </Stylesheets>
+<Scripts>
+    <Script>
+      <Name>The script name including file type extesion</Name>
+      <Content>
+        <![CDATA[The script content]]>
+      </Content>
+    </Script>
+  </Scripts>
+<PartialViews>
+    <PartialView>
+      <Path>The partial view path e.g xxx/yyy.cshtml</Path>
+      <Content>
+        <![CDATA[The paetial view content]]>
+      </Content>
+      <IsMacroPartial>True/False</IsMacroPartial>
+    </PartialView>
+  </PartialViews>
+  <Macros>
+    <Macro>
+      <Name>The macro name</Name>
+      <Alias>The macro alias</Alias>
+      <ScriptPath>The path to the scripting file e.g ~/Views/MacroPartials/xxx/yyy.cshtml</ScriptPath>
+      <ControlAssembly>The control assembly name</ControlAssembly>
+      <XsltPath>The path to the xslt file e.g ~/Xslt/xxx/yyy.xslt</XsltPath>
+      <ControlType></ControlType>
+      <UseInEditor>True/False</UseInEditor>
+      <CacheByMember>True/False</CacheByMember>
+      <CacheByPage>True/False</CacheByPage>
+      <CacheDuration>Integer</CacheDuration>
+      <Properties>
+        <Property>
+          <Name>The property name</Name>
+          <Alias>The property alias</Alias>
+          <Type>The type name or alias</Type>
+        </Property>
+      </Properties>
+    </Macro>
+  </Macros>
+</Configuration>
