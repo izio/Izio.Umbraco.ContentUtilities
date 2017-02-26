@@ -65,7 +65,7 @@
       <ScriptPath>The path to the scripting file e.g ~/Views/MacroPartials/xxx/yyy.cshtml</ScriptPath>
       <ControlAssembly>The control assembly name</ControlAssembly>
       <XsltPath>The path to the xslt file e.g ~/Xslt/xxx/yyy.xslt</XsltPath>
-      <ControlType></ControlType>
+      <ControlType>The path to the user control or ControlType</ControlType>
       <UseInEditor>True/False</UseInEditor>
       <CacheByMember>True/False</CacheByMember>
       <CacheByPage>True/False</CacheByPage>

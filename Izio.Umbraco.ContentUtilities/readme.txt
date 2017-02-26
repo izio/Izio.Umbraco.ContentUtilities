@@ -1,4 +1,16 @@
-﻿Label - Umbraco.NoEdit
+﻿Usage
+================
+
+Create a new instance of ContentTypeCreator, MacroCreator, PartialViewCreator, ScriptCreator, StylesheetCreator or TemplateCreator and call the
+Deploy() metod passing the path to the configuration file or an XDocument configuration file. See sample.xml for details, all default property 
+type names and aliases are listed below.
+
+
+
+Property Type Names/Aliases
+================
+
+Label - Umbraco.NoEdit
 Upload - Umbraco.UploadField
 Textarea - Umbraco.TextboxMultiple
 Textstring - Umbraco.Textbox
