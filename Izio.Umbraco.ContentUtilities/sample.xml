@@ -17,7 +17,7 @@
       <Description>A full description of the content type</Description>
       <AllowedAsRoot>True/False</AllowedAsRoot>
       <Thumbnail></Thumbnail>
-      <Icon>True/False</Icon>
+      <Icon>The icon name</Icon>
       <DefaultTemplate></DefaultTemplate>
       <AllowedContentTypes>A comma separated list of allowable child content type</AllowedContentTypes>
       <AllowedTemplates>A comma separated list of allowable templates</AllowedTemplates>

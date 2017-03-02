@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+    <metadata>
+        <id>Izio.Umbraco.ContentUtilities</id>
+        <version>1.0.4</version>
+        <authors>Patrick Robin</authors>
+        <owners>Patrick Robin</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Provides the ability to deploy Umbraco ContentType, Template, PartialView, PartialMacroView, Macro, Script and Stylesheet objects programatically.</description>
+        <releaseNotes>Updated sample.xml reference to reflect ContentTypeCreator changes</releaseNotes>
+        <copyright>Copyright 2017</copyright>
+        <tags>Umbraco Development</tags>
+        <dependencies>
+            <dependency id="UmbracoCms.Core" version="7.5.3" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\Izio.Umbraco.ContentUtilities\bin\Release\Izio.Umbraco.ContentUtilities.dll" target="lib\Izio.Umbraco.ContentUtilities.dll" />
+        <file src="..\Izio.Umbraco.ContentUtilities\readme.txt" target="readme.txt" />
+		<file src="..\Izio.Umbraco.ContentUtilities\sample.xml" target="content\sample.xml" />
+    </files>
+</package>
