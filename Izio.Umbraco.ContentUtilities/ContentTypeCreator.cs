@@ -176,8 +176,10 @@ namespace Izio.Umbraco.ContentUtilities
                 Alias = contentTypeConfiguration.Element("Alias").Value.ToSafeAlias(),
                 AllowedAsRoot = bool.Parse(contentTypeConfiguration.Element("AllowedAsRoot").Value),
                 AllowedTemplates = GetTemplates(contentTypeConfiguration.Element("AllowedTemplates").Value),
+                Icon = contentTypeConfiguration.Element("Icon").Value,
                 Thumbnail = contentTypeConfiguration.Element("Thumbnail").Value,
-                Description = contentTypeConfiguration.Element("Description").Value
+                Description = contentTypeConfiguration.Element("Description").Value,
+                IsContainer = bool.Parse(contentTypeConfiguration.Element("IsContainer").Value)
             };
 
             //add properties
