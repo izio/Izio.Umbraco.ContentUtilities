@@ -29,6 +29,7 @@
           <Alias>The property alias</Alias>
           <Description>A full description of the property</Description>
           <Mandatory>True/False</Mandatory>
+          <ValidationExpression>The regular expression that should be used to validate the property</ValidationExpression>
           <Type>The type name or alias</Type>
           <Group>The name of the group the property belongs to</Group>
         </Property>

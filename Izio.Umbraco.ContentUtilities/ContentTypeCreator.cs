@@ -192,7 +192,8 @@ namespace Izio.Umbraco.ContentUtilities
                         Name = property.Element("Name").Value,
                         Alias = property.Element("Alias").Value.ToSafeAlias(),
                         Description = property.Element("Description").Value,
-                        Mandatory = bool.Parse(property.Element("Mandatory").Value)
+                        Mandatory = bool.Parse(property.Element("Mandatory").Value),
+                        ValidationRegExp = property.Element("ValidationExpression").Value
                     },
                     property.Element("Group").Value);
             }
