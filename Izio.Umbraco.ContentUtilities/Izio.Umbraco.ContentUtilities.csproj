@@ -253,6 +253,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContentTypeCreator.cs" />
+    <Compile Include="DataTypeCreator.cs" />
     <Compile Include="Interfaces\ICreator.cs" />
     <Compile Include="MacroCreator.cs" />
     <Compile Include="PartialViewCreator.cs" />

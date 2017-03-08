@@ -44,7 +44,7 @@
       </Content>
     </Stylesheet>
   </Stylesheets>
-<Scripts>
+  <Scripts>
     <Script>
       <Name>The script name including file type extesion</Name>
       <Content>
@@ -52,7 +52,7 @@
       </Content>
     </Script>
   </Scripts>
-<PartialViews>
+  <PartialViews>
     <PartialView>
       <Path>The partial view path e.g xxx/yyy.cshtml</Path>
       <Content>
@@ -82,4 +82,17 @@
       </Properties>
     </Macro>
   </Macros>
+  <DataTypes>
+    <DataType>
+      <Name>The datatype name</Name>
+      <Type>The type name or alias</Type>
+      <DatabaseType>The database type</DatabaseType>
+      <PreValues>
+        <PreValue>
+          <Alias>The prevalue alias</Alias>
+          <Value>The prevalue value</Value>
+        </PreValue>
+      </PreValues>
+    </DataType>
+  </DataTypes>
 </Configuration>
