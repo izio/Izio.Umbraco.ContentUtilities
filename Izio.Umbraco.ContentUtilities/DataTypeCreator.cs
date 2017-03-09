@@ -148,7 +148,7 @@ namespace Izio.Umbraco.ContentUtilities
             };
 
             //create prevalues
-            var preValues = dataTypeConfiguration.Descendants("PreValue").ToDictionary(key => key.Element("Alias").Value, value => new PreValue(value.Element("Value").ToString()));
+            var preValues = dataTypeConfiguration.Descendants("PreValue").ToDictionary(key => key.Element("Alias").Value, value => new PreValue(value.Element("Value").Value.ToString()));
             
             //save data type and prevalues
             _dataTypeService.SaveDataTypeAndPreValues(dataTypeDefinition, preValues);
